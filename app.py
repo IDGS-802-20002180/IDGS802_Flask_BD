@@ -24,6 +24,7 @@ def index():
         #Con esta instruccion guardamos los datos en la bd
         db.session.add(alum)
         db.session.commit()
+        return redirect(url_for('ABCompleto'))
     return render_template('index.html',form=create_form)
 
 
@@ -34,6 +35,7 @@ def modificar():
     if request.method=='GET':
         id=request.args.get('id')
         alum1=db.session.query(Alumnos).filter(Alumnos.id==id).first()
+        print("este es el id: "+id)
         create_fprm.id.data=request.args.get('id')
         create_fprm.nombre.data=alum1.nombre
         create_fprm.apellidos.data=alum1.apellidos
@@ -48,6 +50,28 @@ def modificar():
         db.session.commit()
         return redirect(url_for('ABCompleto'))
     return render_template('modificar.html',form=create_fprm)
+
+@app.route("/eliminar",methods=["GET","POST"])
+def eliminar():
+    create_fprm=forms.UserForm(request.form)
+    if request.method=='GET':
+        id=request.args.get('id')
+        alum1=db.session.query(Alumnos).filter(Alumnos.id==id).first()
+        print("este es el id: "+id)
+        create_fprm.id.data=request.args.get('id')
+        create_fprm.nombre.data=alum1.nombre
+        create_fprm.apellidos.data=alum1.apellidos
+        create_fprm.email.data=alum1.email
+    if request.method=='POST':
+        id=create_fprm.id.data
+        alum=db.session.query(Alumnos).filter(Alumnos.id==id).first()
+        alum.nombre=create_fprm.nombre.data
+        alum.apellidos=create_fprm.apellidos.data
+        alum.email=create_fprm.email.data
+        db.session.delete(alum)
+        db.session.commit()
+        return redirect(url_for('ABCompleto'))
+    return render_template('eliminar.html',form=create_fprm)
     
 
 @app.route("/ABCompleto",methods=["GET","POST"])
